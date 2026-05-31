@@ -1,125 +1,114 @@
-import telebot
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+import asyncio
+from aiogram import Bot, Dispatcher, types
+from aiogram.filters import Command
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, LabeledPrice
+from aiogram import F
+import logging
 
-API_TOKEN = '8728002028:AAEj-O8uSGRH7AMWPhh925c8Yx4JV6ux0bY'  # Botunun tokenini buraya yaz!
+logging.basicConfig(level=logging.INFO)
 
-bot = telebot.TeleBot(API_TOKEN)
-balances = {}
-admins = [7089656336]  # Kendi Telegram ID'ni buraya ekle!
+BOT_TOKEN = "8941772678:AAHuE6sJ-Y0jpib2DTir-eglISPCK_C_L4g"
+ADMIN_IDS = [7089656336, 8707761326]
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    markup = InlineKeyboardMarkup()
-    markup.add(
-        InlineKeyboardButton("Grubum", url="https://t.me/elkaide1988"),
-        InlineKeyboardButton("Sahip👤", url="https://t.me/kiraflexx")
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher()
+
+def main_menu():
+    kb = [
+        [InlineKeyboardButton(text="🔥 Esila İfsx - 250 Yıldız", callback_data="pay_esila_250")],
+        [InlineKeyboardButton(text="🔥 Gizem İfsx - 150 Yıldız", callback_data="pay_gizem_150")],
+        [InlineKeyboardButton(text="🔥 Savega İfsx - 200 Yıldız", callback_data="pay_savega_200")],
+        [InlineKeyboardButton(text="🔥 Türbanlı Zelal İfsx - 300 Yıldız", callback_data="pay_zelal_300")],
+        [InlineKeyboardButton(text="🔥 Simge Barkanoğlu İfsx - 250 Yıldız", callback_data="pay_simge_250")],
+        [InlineKeyboardButton(text="🔥 Zoktay Manifest İfsx - 100 Yıldız", callback_data="pay_zoktay_100")],
+        [InlineKeyboardButton(text="🔥 Türk İfsx Arşivi - 120 Yıldız", callback_data="pay_turkifsa_120")],
+        [InlineKeyboardButton(text="🔥 Türk Porn Arşivi - 150 Yıldız", callback_data="pay_turkporn_150")],
+        [InlineKeyboardButton(text="🔥 Türbanlı İfsx - 180 Yıldız", callback_data="pay_turbanli_180")],
+        [InlineKeyboardButton(text="🔥 Elit Kedi TikTok İfsx - 130 Yıldız", callback_data="pay_elitkedi_130")],
+        [InlineKeyboardButton(text="🔥 Gizli Çekimler - 200 Yıldız", callback_data="pay_gizlicekim_200")],
+        [InlineKeyboardButton(text="🔥 Ayak Arşivi - 100 Yıldız", callback_data="pay_ayak_100")],
+        [InlineKeyboardButton(text="🔥 Rus Arşivi - 120 Yıldız", callback_data="pay_rus_120")],
+        [InlineKeyboardButton(text="🔥 UwU Girl Arşivi - 100 Yıldız", callback_data="pay_uwu_100")],
+        [InlineKeyboardButton(text="🔥 Tamirci Hasan İfsx - 250 Yıldız", callback_data="pay_tamirci_250")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+def admin_panel():
+    kb = [
+        [InlineKeyboardButton(text="📢 Duyuru Gönder", callback_data="duyuru")],
+        [InlineKeyboardButton(text="👥 Aktif Kullanıcılar", callback_data="users")],
+        [InlineKeyboardButton(text="🚫 Ban Listesi", callback_data="banlist")]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=kb)
+
+@dp.message(Command("start"))
+async def start(message: types.Message):
+    await message.answer(
+        "🎺 <b>GELİŞMİŞ İFŞX BOTU</b> 🎺\n\n"
+        "Tüm premium içerikler Telegram Yıldızı ile satın alınabilir.\n\n"
+        "Ödeme yaptıktan sonra yöneticilerimiz gerekli içeriği DM üzerinden gönderecektir.\n\n"
+        "📢 Botumuzda ünlülerin ifşxlarını görmek istiyorsanız, satın alarak kesintisiz izleyebilirsiniz.\n\n"
+        "📞 Destek için:\n"
+        "@kiraflexx\n"
+        "@NeonXyl",
+        parse_mode='HTML',
+        reply_markup=main_menu()
     )
-    bot.reply_to(message, '''🎲 EL KAIDE KUMAR BOTUNA HOSGELDINIZ!
-Oynamak için /komutlar yaz
-İyi şanslar 💸 kumar kötüdür 🤠''', reply_markup=markup)
+@dp.message(Command("admin"))
+async def admin_cmd(message: types.Message):
+    if message.from_user.id not in ADMIN_IDS:
+        await message.answer("⛔ Yetkin yok.")
+        return
+    await message.answer("🛠 <b>S3xy Admin panel neonu gotten s1key1m ADFADSDFDS</b>", reply_markup=admin_panel())
 
-@bot.message_handler(commands=['komutlar'])
-def komutlar(message):
-    text = '''🎰 Kumar Botu Komutları:
+# Admin Panel Butonları
+@dp.callback_query(F.data == "duyuru")
+async def duyuru(callback: types.CallbackQuery):
+    if callback.from_user.id not in ADMIN_IDS: return
+    await callback.message.answer("Duyuru metnini yaz, herkese gönderilsin:")
 
-/start 🖱️: Oyunu başlatır 💸
-/risk 💸: Paranızı katla veya kaybet
-/borc 🤝: Bir kullanıcıya para atar
-/zenginler 🏅: En zenginleri gösterir
-/bakiye 💰: Toplam paranı gösterir
-/sifirla 🧹: Kullanıcının bakiyesini sıfırlar (admin)
-/gonder 🎁: Kullanıcıya para gönderir (admin)
-/ceza ❌: Kullanıcıdan para eksiltir (admin)'''
-    bot.reply_to(message, text)
+@dp.message()
+async def all_messages(message: types.Message):
+    if message.from_user.id in ADMIN_IDS and len(message.text) > 3:
+        # Duyuru gönder
+        # (Şu an basit, istersen genişletirim)
+        await message.answer("✅ Duyuru gönderildi (test mod).")
 
-@bot.message_handler(commands=['bakiye'])
-def bakiye(message):
-    user_id = message.from_user.id
-    bakiye = balances.get(user_id, 1000)
-    bot.reply_to(message, f"💰 Bakiyen: {bakiye} TL")
+@dp.callback_query(F.data == "users")
+async def users_list(callback: types.CallbackQuery):
+    if callback.from_user.id not in ADMIN_IDS: return
+    await callback.message.answer("👥 Aktif kullanıcılar: (log sistemi eklenecek)")
 
-@bot.message_handler(commands=['risk'])
-def risk(message):
-    user_id = message.from_user.id
-    parts = message.text.split()
-    if len(parts) != 2 or not parts[1].isdigit():
-        bot.reply_to(message, "Lütfen miktarı sayı olarak yaz: /risk <miktar>")
-        return
-    miktar = int(parts[1])
-    balances.setdefault(user_id, 1000)
-    if balances[user_id] < miktar:
-        bot.reply_to(message, "Yetersiz bakiye!")
-        return
-    import random
-    if random.choice([True, False]):
-        balances[user_id] += miktar
-        bot.reply_to(message, f"🎉 Kazandın! Yeni bakiyen: {balances[user_id]} TL")
-    else:
-        balances[user_id] -= miktar
-        bot.reply_to(message, f"😢 Kaybettin! Yeni bakiyen: {balances[user_id]} TL")
+@dp.callback_query(F.data == "banlist")
+async def banlist(callback: types.CallbackQuery):
+    if callback.from_user.id not in ADMIN_IDS: return
+    await callback.message.answer("🚫 Banlı kimse yok (şu an).")
 
-@bot.message_handler(commands=['borc'])
-def borc(message):
-    parts = message.text.split()
-    if len(parts) != 3 or not parts[1].isdigit() or not parts[2].isdigit():
-        bot.reply_to(message, "Kullanım: /borc <kullanıcı_id> <miktar>")
-        return
-    to_id = int(parts[1])
-    miktar = int(parts[2])
-    balances.setdefault(to_id, 1000)
-    balances[to_id] += miktar
-    bot.reply_to(message, f"✅ {to_id} ID'li kullanıcıya {miktar} TL borç verdin.")
+# Ödeme Sistemi
+@dp.callback_query(F.data.startswith("pay_"))
+async def handle_payment(callback: types.CallbackQuery):
+    data = callback.data.split("_")
+    name = " ".join(data[1:-1]).replace("_", " ")
+    price = int(data[-1])
 
-@bot.message_handler(commands=['zenginler'])
-def zenginler(message):
-    if not balances:
-        bot.reply_to(message, "Henüz kimsenin bakiyesi yok.")
-        return
-    sirali = sorted(balances.items(), key=lambda x: x[1], reverse=True)[:10]
-    text = "🏅 Zenginler Listesi:\n"
-    for i, (uid, bakiye) in enumerate(sirali, 1):
-        text += f"{i}. Kullanıcı {uid} - {bakiye} TL\n"
-    bot.reply_to(message, text)
+    prices = [LabeledPrice(label=f"{name} İfsx", amount=price)]
 
-@bot.message_handler(commands=['sifirla'])
-def sifirla(message):
-    if message.from_user.id not in admins:
-        bot.reply_to(message, "Bu komutu sadece adminler kullanabilir!")
-        return
-    parts = message.text.split()
-    if len(parts) != 2 or not parts[1].isdigit():
-        bot.reply_to(message, "Kullanım: /sifirla <kullanıcı_id>")
-        return
-    to_id = int(parts[1])
-    balances[to_id] = 0
-    bot.reply_to(message, f"🔄 {to_id} ID'li kullanıcının bakiyesi sıfırlandı.")
+    await bot.send_invoice(
+        chat_id=callback.from_user.id,
+        title=f"{name} İfsx",
+        description="Ödeme sonrası admin DM atacak.",
+        payload=f"neonx_{name}_{price}",
+        provider_token="",
+        currency="XTR",
+        prices=prices
+    )
 
-@bot.message_handler(commands=['gonder'])
-def gonder(message):
-    if message.from_user.id not in admins:
-        bot.reply_to(message, "Bu komutu sadece adminler kullanabilir!")
-        return
-    parts = message.text.split()
-    if len(parts) != 3 or not parts[1].isdigit() or not parts[2].isdigit():
-        bot.reply_to(message, "Kullanım: /gonder <kullanıcı_id> <miktar>")
-        return
-    to_id = int(parts[1])
-    miktar = int(parts[2])
-    balances.setdefault(to_id, 1000)
-    balances[to_id] += miktar
-    bot.reply_to(message, f"💸 {to_id} ID'li kullanıcıya {miktar} TL gönderildi.")@bot.message_handler(commands=['ceza'])
-def ceza(message):
-    if message.from_user.id not in admins:
-        bot.reply_to(message, "Bu komutu sadece adminler kullanabilir!")
-        return
-    parts = message.text.split()
-    if len(parts) != 3 or not parts[1].isdigit() or not parts[2].isdigit():
-        bot.reply_to(message, "Kullanım: /ceza <kullanıcı_id> <miktar>")
-        return
-    to_id = int(parts[1])
-    miktar = int(parts[2])
-    balances.setdefault(to_id, 1000)
-    balances[to_id] -= miktar
-    bot.reply_to(message, f"🚫 {to_id} ID'li kullanıcının bakiyesinden {miktar} TL eksiltildi.")
+@dp.message(F.successful_payment)
+async def successful_payment(message: types.Message):
+    await message.answer("✅ Ödeme Başarılı! Adminler DM’den içeriği gönderecek.")
 
-bot.infinity_polling()
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())
